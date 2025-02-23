@@ -1,6 +1,6 @@
 # Data Analysis for Life Sciences - BENG628
 
-This repository contains R code and workflows from the BENG628 lectures on data analysis techniques applied to life sciences.
+This repository contains R code and workflows from the BENG628 lectures on data analysis techniques applied to life science and medicine.
 
 ## Course Description
 
