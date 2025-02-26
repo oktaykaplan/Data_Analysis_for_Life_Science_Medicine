@@ -16,10 +16,10 @@ library(stringr)
 #pivot_longer() and pivot_wider():  These are crucial for reshaping data between wide and long formats.  
 #Many statistical analyses and visualizations require data in a specific format
 wide_data <- data.frame(patient = 1:3, week1 = c(10, 12, 11), week2 = c(15, 14, 16))
-view(wide_data)
+View(wide_data)
 
 long_data <- wide_data %>% pivot_longer(cols = starts_with("week"), names_to = "week", values_to = "measurement")
-view(long_data)
+View(long_data)
 
 # Long to wide
 long_data %>% pivot_wider(names_from = week, values_from = measurement)
@@ -31,23 +31,24 @@ long_data %>% pivot_wider(names_from = week, values_from = measurement)
 
 #Extracting parts of strings
 gene_names <- c("TP53_mutant", "KRAS_wildtype", "EGFR_mutant")
-view(gene_names)
+View(gene_names)
 #Let's extract using mutant or wildtype
 gene_types <- str_extract(gene_names, "(mutant|wildtype)")
-view(gene_types)
+View(gene_types)
 
 # Replacing patterns
 dna_sequence <- "ATGCCTAG"
-view(dna_sequence)
+View(dna_sequence)
 #Replace a specific someting with another
 mutated_sequence <- str_replace(dna_sequence, "CCT", "GGT")
-view(mutated_sequence)
+View(mutated_sequence)
 
 #Splitting strings
 patient_info <- "John Doe, 35, Male"
-view(patient_info)
-info_parts <- str_split(patient_info, ", ")
-view(info_parts)
+View(patient_info)
+info_parts <- str_split(patient_info, "  ")
+info_parts1 <- str_split(patient_info, ", ")
+View(info_parts1)
 
 library(mice)
 #Beyond just filtering, scientists need strategies for dealing with missing data
@@ -74,8 +75,11 @@ gene_expr <- data.frame(
   replicate = rep(1:2, 3)
 )
 
+View(gene_expr)
+colnames(gene_expr)
+names(gene_expr)
 # Add time_point as numeric variable
-gene_expr <- gene_expr %>%
+gene_expr1 <- gene_expr %>%
   mutate(
     time_point = case_when(
       condition == "control" ~ 0,
@@ -86,8 +90,10 @@ gene_expr <- gene_expr %>%
     condition = factor(condition, levels = c("control", "treatment_A", "treatment_B"))
   )
 
+View(gene_expr1)
+
 # Transform to long format (keeping all metadata)
-long_data <- gene_expr %>%
+long_data <- gene_expr1 %>%
   pivot_longer(
     cols = starts_with("ENSG"),
     names_to = "gene_id",
@@ -95,7 +101,7 @@ long_data <- gene_expr %>%
   )
 
 # Grouped summary by condition only (time_point is redundant)
-grouped_summary <- gene_expr %>%
+grouped_summary <- gene_expr1 %>%
   group_by(condition) %>%
   summarise(across(starts_with("ENSG"),
                    list(mean = mean, sd = sd),
@@ -114,13 +120,14 @@ summarized_expr <- long_data %>%
   )
 
 # Visualization 1: Boxplot of expression by condition
-ggplot(long_data, aes(x = condition, y = expression, fill = condition)) +
+a <- ggplot(long_data, aes(x = condition, y = expression, fill = condition)) +
   geom_boxplot() +
   facet_wrap(~gene_id, scales = "free_y") +
-  labs(title = "Gene Expression Distribution by Condition",
+  labs(title = "Lecture is boring Gene Expression Distribution by Condition",
        x = "Condition",
        y = "Expression Level") +
   theme_minimal()
+a
 
 # Visualization 2: Line plot of expression over time
 time_summary <- long_data %>%
@@ -131,6 +138,7 @@ time_summary <- long_data %>%
     .groups = "drop"
   )
 
+View(time_summary)
 ggplot(time_summary, aes(x = time_point, y = mean_expr, color = gene_id)) +
   geom_line(linewidth = 1) +
   geom_point(size = 3) +
@@ -140,6 +148,17 @@ ggplot(time_summary, aes(x = time_point, y = mean_expr, color = gene_id)) +
        y = "Mean Expression Level",
        color = "Gene ID") +
   theme_minimal()
+
+#Playing
+ggplot(time_summary, aes(x = time_point, y = mean_expr, color = gene_id)) +
+  geom_line(linewidth = 10) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = mean_expr - sd_expr, ymax = mean_expr + sd_expr), width = 3) +
+  labs(title = "Gene Expression Trajectories Over Time",
+       x = "Time Point (hours)",
+       y = "Mean Expression Level",
+       color = "Gene ID")
+
 
 # Visualization 3: Heatmap of mean expression
 ggplot(summarized_expr, aes(x = condition, y = gene_id, fill = mean_expr)) +
@@ -159,13 +178,132 @@ print(summarized_expr) # Print the summary results
 #Hands-on Exercise 1 (30 min)
 #Working with real RNA-seq count data:
 # Load example RNA-seq dataset
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+#  install.packages("BiocManager")
+
+#BiocManager::install("airway")
+library(airway)
+library(DESeq2)
+
 data("airway", package = "airway")
 
 # Convert to DESeq2 object
 dds <- DESeqDataSet(airway, design = ~ cell + dex)
 
+# Estimate size factors
+dds <- estimateSizeFactors(dds)
+
 # Normalize counts
 normalized_counts <- counts(dds, normalized=TRUE)
+
+
+# Preprocess data
+dds <- DESeq(dds)  # Perform differential expression analysis
+rld <- rlog(dds)   # Regularized log transformation
+
+
+# Compute row-wise variance
+gene_variances <- apply(assay(rld), 1, var)
+names(gene_variances)
+# Get top 500 most variable genes
+top500_genes <- names(sort(gene_variances, decreasing = TRUE)[1:500])
+top500_genes
+
+# Load the necessary libraries for biomaRt to fetch HGNC gene symbols
+library(biomaRt)
+
+
+# Extract top 500 genes
+top500_data <- assay(rld)[top500_genes,]
+
+head(top500_genes)
+# Convert your list of Ensembl IDs into a data frame
+top500_genes_data <- data.frame(Ensembl_ID = top500_genes)
+
+View(top500_genes_data)
+# Connect to the Ensembl BioMart database for human genes
+ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+
+# Retrieve HGNC gene symbols for your Ensembl IDs
+hgnc_names <- getBM(attributes = c("ensembl_gene_id", "hgnc_symbol"),
+                    filters = "ensembl_gene_id", 
+                    values = top500_genes, 
+                    mart = ensembl)
+View(hgnc_names)
+
+# Merge the retrieved HGNC symbols with your top500 Ensembl gene IDs
+top500_with_hgnc <- merge(top500_genes_data, hgnc_names, by.x = "Ensembl_ID", by.y = "ensembl_gene_id", all.x = TRUE)
+
+# View the merged results
+head(top500_with_hgnc)
+
+
+# Perform PCA
+pcaData <- plotPCA(rld, intgroup = c("dex", "cell"), returnData = TRUE)
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+
+# Plot
+ggplot(pcaData, aes(PC1, PC2, color = dex, shape = cell)) +
+  geom_point(size = 3) +
+  xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+  ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+  theme_minimal() +
+  ggtitle("PCA of Airway Dataset")
+
+#MA Plot (Differential Expression)
+plotMA(dds, ylim=c(-5,5), main="MA Plot of Airway Dataset")
+
+#Heatmap (Sample Similarity
+library(pheatmap)
+
+# Extract transformed counts
+sampleDists <- dist(t(assay(rld)))
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- colnames(rld)
+colnames(sampleDistMatrix) <- colnames(rld)
+
+# Plot heatmap
+pheatmap(sampleDistMatrix, clustering_distance_rows=sampleDists, 
+         clustering_distance_cols=sampleDists, main="Sample Clustering Heatmap")
+
+
+
+# Load necessary libraries
+library(clusterProfiler)
+library(org.Hs.eg.db)
+keytypes(org.Hs.eg.db)
+
+entrez_ids <- mapIds(org.Hs.eg.db, 
+                     keys = top500_genes, 
+                     column = "ENTREZID", 
+                     keytype = "ENSEMBL", 
+                     multiVals = "first")
+entrez_ids
+
+
+# Plot heatmap
+pheatmap(top500_data, scale="row", show_rownames=FALSE, 
+         clustering_distance_rows="euclidean", 
+         clustering_distance_cols="euclidean",
+         main="Top 500 Most Variable Genes Heatmap")
+
+
+# Perform GO enrichment analysis
+ego <- enrichGO(gene = entrez_ids,
+                OrgDb = org.Hs.eg.db,
+                keyType = "ENTREZID",
+                ont = "BP", # Biological Process (can be "MF" for Molecular Function, "CC" for Cellular Component)
+                pAdjustMethod = "BH",
+                pvalueCutoff = 0.05,
+                qvalueCutoff = 0.05,
+                readable = TRUE)  # Converts Entrez IDs to gene symbols in the results
+
+# View top enriched GO terms
+head(ego)
+
+# Plot results
+barplot(ego, showCategory=20)
+dotplot(ego, showCategory=20)
 
 # Exercise tasks:
 # 1. Convert normalized counts to tidy format
@@ -384,15 +522,84 @@ library(factoextra)
 #PC2 (vertical axis): This axis captures the second-largest variance, orthogonal (at a 90-degree angle) to PC1.
 
 gene_data <- data.frame(
-  Patient = paste0("P", 1:7),
+  Patient = paste0("ZANYAR", 1:7),
   ARL13B = c(10, 15, 20, 18, 25, 30, 28),
   IFT88 = c(5, 8, 6, 12, 10, 15, 18),
-  IFT81 = c(50, 55, 60, 58, 65, 70, 75),
-  BBS1 = c(100, 120, 110, 105, 130, 140, 135)
+  IFT81 = c(50, 55, 60, 58, 85, 70, 75),
+  BBS1 = c(100, 120, 110, 250, 130, 140, 135)
 )
 
+
+
+# Simulate methylation data (random values between 0 and 1, representing DNA methylation levels)
+#Methylation data is simulated as random values between 0 and 1 (common representation for methylation levels).
+set.seed(123) # For reproducibility
+methylation_data <- data.frame(
+  ARL13B = runif(7, 0, 1),
+  IFT88 = runif(7, 0, 1),
+  IFT81 = runif(7, 0, 1),
+  BBS1 = runif(7, 0, 1)
+)
+
+
+# Simulate ChIP-seq data (random values representing ChIP-seq signal intensity)
+#ChIP-seq data is simulated with random values between 0 and 100 (a typical range for ChIP-seq signal intensity).
+chip_seq_data <- data.frame(
+  ARL13B = runif(7, 0, 100),
+  IFT88 = runif(7, 0, 100),
+  IFT81 = runif(7, 0, 100),
+  BBS1 = runif(7, 0, 100)
+)
+
+#The gene expression, methylation, and ChIP-seq data are combined.
+# Combine gene expression, methylation, and ChIP-seq data for correlation analysis
+combined_data <- cbind(gene_data[, -1], methylation_data, chip_seq_data)
+
+# Perform correlation analysis (Pearson)
+#A correlation analysis (Pearson's correlation) is performed between these datasets.
+correlation_matrix <- cor(combined_data)
+
+#What the values mean:
+#Correlation coefficients range from -1 to +1:
+#+1 means a perfect positive correlation (when one variable increases, the other also increases).
+#-1 means a perfect negative correlation (when one variable increases, the other decreases).
+#0 means no correlation (no relationship between the two variables).
+#Between 0 and +1/-1 means a partial correlation (the two variables are related but not perfectly).
+#Methylation & ChIP-seq Data: The correlation matrix shows that methylation and ChIP-seq data tend to have weaker correlations with gene expression data. 
+# Output the correlation matrix
+correlation_matrix
+
+
+# Heatmap
+pheatmap(correlation_matrix, 
+         display_numbers = TRUE, 
+         cluster_rows = FALSE, 
+         cluster_cols = FALSE, 
+         color = colorRampPalette(c("blue", "white", "red"))(50), 
+         main = "Correlation Matrix Heatmap")
+
+# Scatter Plot (example for highly correlated gene pairs)
+ggplot(gene_data, aes(x = ARL13B, y = IFT88)) +
+  geom_point(aes(color = "ARL13B vs IFT88")) +
+  geom_smooth(method = "lm", col = "blue") +
+  labs(title = "Scatter Plot: ARL13B vs IFT88", x = "ARL13B Expression", y = "IFT88 Expression") +
+  theme_minimal()
+
+# Another Scatter Plot (IFT88 vs BBS1)
+ggplot(gene_data, aes(x = IFT88, y = BBS1)) +
+  geom_point(aes(color = "IFT88 vs BBS1")) +
+  geom_smooth(method = "lm", col = "green") +
+  labs(title = "Scatter Plot: IFT88 vs BBS1", x = "IFT88 Expression", y = "BBS1 Expression") +
+  theme_minimal()
+
+gene_data
+#Exclude the patient column
+gene_data[, -1]
+  
 # Perform PCA (excluding Patient column)
 pca_result <- PCA(gene_data[, -1], scale.unit = TRUE, graph = FALSE)
+
+pca_result
 
 #Grouping Variable as Factor: The habillage argument is set to factor(gene_data$Patient) 
 #to ensure that the Patient column is treated as a categorical variable for color grouping.
@@ -420,6 +627,11 @@ hc <- hclust(dist_matrix, method = "ward.D2")  # Hierarchical clustering
 
 # Plot dendrogram
 plot(hc, labels = gene_data$Patient, main = "Hierarchical Clustering of Patients")
+
+
+
+
+
 
 
 #Advanced Outlier Detection
