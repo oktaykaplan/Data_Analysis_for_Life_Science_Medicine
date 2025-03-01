@@ -91,7 +91,7 @@ BENG628 focuses on equipping students with the skills to analyze life sciences d
 
 ## How to Run the Code
 
-1. **Clone the repository:** `git clone https://github.com/yourusername/Data-Analysis-for-Life-Sciences.git`
+1. **Clone the repository:** `git clone https://github.com/oktaykaplan/Data-Analysis-for-Life-Sciences.git`
 2. **Open the RStudio project files:** For each lecture, open the corresponding `.Rproj` file in RStudio. This will set the correct working directory.
 3. **Install required packages:** Make sure you have all the necessary R packages installed. You can install them using `install.packages()` or `BiocManager::install()` for Bioconductor packages.
 4. **Run the R scripts:** Execute the code in the `.R` files sequentially, following the instructions and comments provided.
