@@ -103,7 +103,7 @@ BENG628 focuses on equipping students with the skills to analyze life sciences d
 * **Lecture 2:**
     * Global Health Statistics Dataset: [https://www.kaggle.com/datasets/malaiarasugraj/global-health-statistics](https://www.kaggle.com/datasets/malaiarasugraj/global-health-statistics)
 * **Lecture 5: RNA-seq Analysis for Rare Diseases**
-*  * BENG628_Lecture5.R: R script demonstrating RNA-seq analysis using DESeq2 for rare genetic disorders, with a case study on Facioscapulohumeral Muscular Dystrophy (FSHD).
+    * BENG628_Lecture5.R: R script demonstrating RNA-seq analysis using DESeq2 for rare genetic disorders, with a case study on Facioscapulohumeral Muscular Dystrophy (FSHD).
     * Includes differential expression analysis, volcano plot visualization, and interactive gene search.
     * data/extracted_files/: Folder for GSE174301 RNA-seq data (to be downloaded manually from https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE174301).
     * output/Lecture5_VolcanoPlot.png: Generated volcano plot highlighting key FSHD-related genes.
