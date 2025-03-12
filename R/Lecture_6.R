@@ -47,6 +47,7 @@ cat("Number of overexpressed genes:", nrow(sig_genes), "\n")
 # Convert ENSG to HGNC using biomaRt
 # Connect to Ensembl BioMart
 ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl", mirror = "uswest")
 
 # Get HGNC symbols for significant genes
 ensg_ids <- rownames(sig_genes)
@@ -106,113 +107,6 @@ cat("After prioritization, the top gene (", sig_genes_df$hgnc_symbol[1],
 cat("This suggests a potential novel mutation driving overexpression, disrupting normal cellular function.\n")
 cat("Proposed treatment: Gene therapy to silence the overexpressed gene.\n")
 
-
-#Provide Patient Data: Please provide the gene expression data for the patients from 
-#Cummings et al. (2017) in a similar format (e.g., a matrix or data frame with gene IDs and expression values).
-library(recount3)
-library(DESeq2)
-library(preprocessCore)
-packageVersion("recount3")
-
-#Manually check available projects
-recount3::available_projects()
-#gtex is no longer listed as an available project in recount3.
-
-library(recount3)
-options(recount3_url = "https://sciserver.org/public-data/recount3/data")  # Alternative URL
-human_projects <- available_projects()
-gtex_rse <- create_rse(subset(human_projects, project == "MUSCLE_SKELETAL" & project_home == "data_sources/gtex"))
-
-
-# Define the GTEx IDs (You should have this vector ready from the previous steps)
-#All the GTEx IDs were provided in a more manageable format, split into three chunks
-gtex_ids <- c("G16537.GTEX-OHPL-1626.2", "G16558.GTEX-P4PP-1626.2", "G16582.GTEX-OHPM-1626.3", "G16596.GTEX-OIZH-1626.2", "G16598.GTEX-P4PQ-1626.2", "G16687.GTEX-OOBJ-1626.3", "G18069.GTEX-OHPK-1626-SM-2YUN3.1", "G18373.GTEX-QCQG-2126-SM-2S1P8.1", "G18402.GTEX-Q2AH-1826-SM-2S1Q2.1", "G18404.GTEX-QDVN-2426-SM-2S1Q4.1", "G18447.GTEX-QV44-2026-SM-2S1RD.1", "G19326.GTEX-S32W-2326-SM-2XCAW.1", "G19355.GTEX-S7SF-2026-SM-3K2AS.1", "G19468.GTEX-POYW-0526-SM-2XCEY.2", "G19491.GTEX-SNMC-1426-SM-2XCFM.2", "G20855.GTEX-O5YT-1626-SM-32PK6.1", "G20912.GTEX-SUCS-1626-SM-32PLS.2", "G21042.GTEX-TML8-1826-SM-32QOR.1", "G21087.GTEX-TKQ2-0826-SM-33HB6.1", "G21092.GTEX-TMMY-0426-SM-33HBB.1", "G22936.GTEX-U4B1-1626-SM-3DB8N.1", "G22959.GTEX-UJHI-1726-SM-3DB9B.1", "G22964.GTEX-U3ZM-1226-SM-3DB9G.1", "G23319.GTEX-R55D-0626-SM-3GAD5.1", "G23324.GTEX-Q734-2026-SM-3GADA.1", "G23343.GTEX-UJMC-1826-SM-3GADT.1", "G23350.GTEX-T5JW-1826-SM-3GAE1.1", "G23437.GTEX-R53T-1826-SM-3GIJX.1", "G25647.GTEX-WRHK-1626-SM-3MJFH.1", "G25653.GTEX-WRHU-0826-SM-3MJFN.1", "G25657.GTEX-WOFM-1326-SM-3MJFR.1", "G25900.GTEX-POMQ-1926-SM-3NB1Y.2", "G25923.GTEX-WY7C-2526-SM-3NB2N.2", "G25950.GTEX-WXYG-2526-SM-3NB3F.2", "G26541.GTEX-WZTO-0826-SM-3NM8Q.1", "G26590.GTEX-T5JC-0626-SM-3NMA6.1", "G26643.GTEX-WHPG-2226-SM-3NMBO.1", "G29343.GTEX-WHSB-1826-SM-3TW8M.1", "G32952.GTEX-U3ZG-0326-SM-47JXN.3", "G32956.GTEX-X638-0326-SM-47JY1.3", "G32988.GTEX-X88G-0326-SM-47JZ4.3", "G33005.GTEX-XUYS-0326-SM-47JX2.3", "G34336.GTEX-XYKS-2426-SM-4AT43.2", "G34379.GTEX-XOTO-0526-SM-4B662.3", "G34401.GTEX-XPT6-2026-SM-4B64V.3", "G34459.GTEX-XQ8I-0626-SM-4BOPT.7", "G34487.GTEX-XUW1-0826-SM-4BOP6.7", "G34523.GTEX-XUJ4-2626-SM-4BOQ3.8", "G34707.GTEX-XUZC-2126-SM-4BRW8.1", "G34751.GTEX-XV7Q-2926-SM-4BRUL.1", "G35292.GTEX-U3ZH-1926-SM-4DXTR.7", "G35593.GTEX-X4XY-0626-SM-4E3IN.4", "G35606.GTEX-XBED-2626-SM-4E3J5.4", "G40775.GTEX-VUSG-2626-SM-4KKZI.2", "G42368.GTEX-XBEC-0626.2", "G42376.GTEX-XBEW-1026.2", "G46557.GTEX-Y114-2526.2", "G46837.GTEX-Y8LW-2026.1", "G46924.GTEX-Y5V5-2526.1", "G46925.GTEX-Y8E4-1026.1", "G47050.GTEX-Y5LM-2126.3", "G49116.GTEX-Y3IK-2626.1", "G49331.GTEX-YEC3-2126.2", "G49368.GTEX-ZV6S-2126.2", "G49499.GTEX-ZQUD-1726.2", "G49500.GTEX-ZQG8-1226.2", "G49505.GTEX-ZTX8-1626.2", "G52281.GTEX-Y8E5-0326.1", "G52338.GTEX-ZVZP-2526.1", "G52366.GTEX-ZPIC-2526.1", "G52382.GTEX-ZPCL-2026.1", "G52423.GTEX-ZT9X-1826.1", "G52456.GTEX-111YS-2326.3", "G52511.GTEX-11EMC-2626.3", "G52613.GTEX-1211K-2126.2", "G52634.GTEX-YBZK-0326.2", "G53040.GTEX-11I78-2426.3", "G53845.GTEX-131XF-2326.2") 
-gtex_id1s <- c("G56104.GTEX-11VI4-1926.2", "G56118.GTEX-11WQC-2626.2", "G56120.GTEX-11XUK-2226.3", "G56168.GTEX-Z9EW-1726.2", "G56219.GTEX-12ZZX-0326.2", "G56346.GTEX-ZYWO-2626.3", "G56350.GTEX-ZZ64-1526.3", "G58300.GTEX-113JC-2726.2", "G58373.GTEX-ZAKK-0326.2", "G58504.GTEX-117YX-2526.2", "G58531.GTEX-12ZZY-0626.2", "G59139.GTEX-11ZTT-2626.6", "G59232.GTEX-11ZVC-2726.3", "G59253.GTEX-12BJ1-2526.3", "G59256.GTEX-12C56-1926.3", "G59396.GTEX-ZYFG-2426.4", "G59469.GTEX-1122O-2426.4", "G59538.GTEX-11WQK-0726.2", "G59578.GTEX-11P81-2526.2", "G59646.GTEX-ZY6K-2026.3", "G59671.GTEX-111CU-2026.3", "G59754.GTEX-11EM3-2126.2", "G59774.GTEX-ZVZO-0326.2", "G59785.GTEX-11NSD-2026.2", "G59863.GTEX-ZDYS-1726.2", "G59944.GTEX-131XG-2326.2", "G59960.GTEX-ZC5H-0326.2", "G59995.GTEX-1399R-2526.1", "G60093.GTEX-13JUV-2326.2", "G60097.GTEX-13FHO-0726.2", "G60107.GTEX-13NZ9-0626.2", "G60109.GTEX-139YR-2526.2", "G60125.GTEX-13FTY-0226.2", "G60145.GTEX-13PL7-0626.2", "G60147.GTEX-13U4I-1826.2", "G60275.GTEX-13CF3-1826.2", "G60309.GTEX-13N2G-2326.2", "G60340.GTEX-13O61-2326.2", "G60380.GTEX-1399Q-2426.3", "G60418.GTEX-13NZB-2626.3", "G60480.GTEX-139UW-2626.2", "G60481.GTEX-13FXS-0326.2", "G60551.GTEX-133LE-2026.2", "G60589.GTEX-13FTW-2326.2", "G60652.GTEX-1339X-2426.2", "G60659.GTEX-13D11-2526.2", "G60667.GTEX-132NY-0726.2", "G60681.GTEX-1399S-2726.2", "G60704.GTEX-13OVG-2126.2", "G60844.GTEX-1399U-2526.2", "G60873.GTEX-13FH7-2126.2", "G60893.GTEX-13N11-2726.2", "G60911.GTEX-13OVH-0626.2", "G60925.GTEX-13OVI-1726.2", "G60943.GTEX-13OW6-0626.2", "G61036.GTEX-13VXT-0326.2", "G61055.GTEX-13QBU-2426.2", "G61092.GTEX-144GM-2026.2", "G61098.GTEX-13W46-0726.2", "G61114.GTEX-144GN-2426.2", "G61138.GTEX-YB5E-2226.3", "G61143.GTEX-YB5K-2326.3", "G61154.GTEX-YEC4-2226.3", "G61166.GTEX-Y5V6-2626.3", "G61185.GTEX-YF7O-2526.3", "G61197.GTEX-Y9LG-1926.3")
-gtex_id12s <- c("G61849.GTEX-145LV-2326.2", "G61884.GTEX-13111-2226.2", "G61944.GTEX-12WSJ-1726.2", "G61950.GTEX-12WSN-2526.2", "G61955.GTEX-1314G-1726.2", "G62186.GTEX-145ME-2026.2", "G62216.GTEX-1497J-2626.2", "G62228.GTEX-13W3W-2626.2", "G62275.GTEX-11DXZ-2426.2", "G62501.GTEX-ZV7C-2426.2", "G62593.GTEX-146FQ-0326.2", "G62605.GTEX-145MN-2426.2", "G62612.GTEX-147F3-0226.2", "G62660.GTEX-ZTPG-0126.2", "G62709.GTEX-145LT-1626.2", "G62774.GTEX-13YAN-0526.3", "G62899.GTEX-139D8-0726.3", "G63046.GTEX-11EQ9-2126.2", "G63072.GTEX-132AR-1")
-
-
-# Get available human projects
-human_projects <- available_projects()
-# Check the first few rows of human_projects
-head(human_projects)
-# Look at unique project names
-unique(human_projects$project)
-
-# Get the correct URL for GTEx data
-gtex_url <- "https://recount-opendata.s3.amazonaws.com/recount3/release/human/gtex"
-
-# Get GTEx projects
-gtex_projects <- available_projects(recount3_url = gtex_url)
-
-# View the GTEx projects
-head(gtex_projects)
-
-
-# Access GTEx data specifically
-project_homes <- available_homes("human")
-gtex_projects <- available_projects(recount3_url = project_homes["gtex"])
-# Check the structure of gtex_info
-dim(gtex_info)
-head(gtex_info)
-
-# We need to specify a single tissue/study
-# Let's see what options are available
-unique(gtex_info$file_source)
-
-
-
-# Create the RSE object
-gtex_project <- create_rse(gtex_info)
-
-# Define your GTEx IDs (combine all lists)
-gtex_all_ids <- c(gtex_ids, gtex_id1s, gtex_id12s)
-
-# Access GTEx project (assuming skeletal muscle data)
-gtex_project <- create_rse(project = "GTEX")
-
-# Extract metadata to match your IDs
-metadata <- colData(gtex_project)
-available_ids <- metadata$external_id  # Adjust column name based on recount3 metadata
-
-# Filter for your specific IDs
-matched_ids <- gtex_all_ids[gtex_all_ids %in% available_ids]
-if (length(matched_ids) < length(gtex_all_ids)) {
-  warning("Some IDs not found in recount3 GTEx data!")
-  print(setdiff(gtex_all_ids, matched_ids))
-}
-
-# Subset the RangedSummarizedExperiment object
-gtex_subset <- gtex_project[, matched_ids]
-
-# Extract gene expression counts
-gene_counts <- assays(gtex_subset)$counts
-
-# Save to file
-write.csv(as.data.frame(gene_counts), "gtex_subset_gene_counts.csv", row.names = TRUE)
-
-# Convert to DESeq2 object
-dds <- DESeqDataSetFromMatrix(
-  countData = assays(rse_gene_subset)$counts, 
-  colData = colData(rse_gene_subset), 
-  design = ~1
-)
-
-# Normalize the counts using quantile normalization
-norm_counts <- normalize.quantiles(assay(dds))
-
-# Convert the normalized data back to a matrix
-assay(dds) <- norm_counts
-
-# Run DESeq2 analysis (if needed)
-dds <- DESeq(dds)
-
-# Extract results
-res <- results(dds)
-
-# Display summary of the results
-summary(res)
-
-
 #################################################Facioscapulohumeral Muscular Dystrophy (FSHD):FSHD is a rare neuromuscular disorder with complex genetic mechanisms.############################
 #Studies have used RNA-seq to investigate the role of DUX4 gene expression in FSHD pathogenesis.
 #You can find RNA-seq data related to FSHD on NCBI GEO. Search for "FSHD RNA-seq" and look for studies with patient and control samples.
@@ -240,7 +134,7 @@ library(gplots)
 library(RColorBrewer)
 
 # Set working directory - modify this to your path
-setwd("/home/kaplanlab/Downloads")
+setwd("/Users/sebihacevik/Downloads")
 
 # Extract tar file if not already extracted
 if (!dir.exists("extracted_files")) {
