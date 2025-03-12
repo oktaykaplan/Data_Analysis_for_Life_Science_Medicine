@@ -19,8 +19,8 @@ BENG628 focuses on equipping students with the skills to analyze life sciences d
     * `BENG628_Lecture3.R`: R script covering advanced data manipulation techniques, including reshaping, string manipulation, and handling missing data. Also includes more advanced ggplot2 visualizations.
 * **Lecture 4: Data Visualization and Basic Statistical Analysis**
     * `BENG628_Lecture4.R`: R script focusing on data visualization principles and techniques using ggplot2, as well as basic statistical summaries and functions.
-* **Lecture 5: Data Visualization in R with ggplot2**
-    * `BENG628_Lecture5.R`: R script dedicated to advanced ggplot2 visualizations, including various plot types for categorical and numerical data, and customization techniques.
+* **Lecture 5: RNA-seq Analysis for Rare Diseases**
+    * `BENG628_Lecture5.R`: R script demonstrating RNA-seq analysis using DESeq2 for rare genetic disorders, with a case study on Facioscapulohumeral Muscular Dystrophy (FSHD). Includes differential expression analysis, volcano plot visualization, and gene search.
 * **Lecture 6: Working with Genomic Data**
     * `BENG628_Lecture6.R`: R script demonstrating how to access and analyze genomic data from resources like GEO (Gene Expression Omnibus) and Ensembl.
 * **Lecture 7: Advanced Genomic Data Analysis**
@@ -102,9 +102,7 @@ BENG628 focuses on equipping students with the skills to analyze life sciences d
     * Clinical Data Discovery Cohort: [https://www.kaggle.com/datasets/imtkaggleteam/clinical-dataset](https://www.kaggle.com/datasets/imtkaggleteam/clinical-dataset)
 * **Lecture 2:**
     * Global Health Statistics Dataset: [https://www.kaggle.com/datasets/malaiarasugraj/global-health-statistics](https://www.kaggle.com/datasets/malaiarasugraj/global-health-statistics)
-* **Lecture 5: RNA-seq Analysis for Rare Diseases**
-    * BENG628_Lecture5.R: R script demonstrating RNA-seq analysis using DESeq2 for rare genetic disorders, with a case study on Facioscapulohumeral Muscular Dystrophy (FSHD).
-    * Includes differential expression analysis, volcano plot visualization, and interactive gene search.
+* **Lecture 5:**
     * data/extracted_files/: Folder for GSE174301 RNA-seq data (to be downloaded manually from https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE174301).
     * output/Lecture5_VolcanoPlot.png: Generated volcano plot highlighting key FSHD-related genes.
 * **Lecture 6:**
