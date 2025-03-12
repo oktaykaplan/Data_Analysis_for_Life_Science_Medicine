@@ -102,8 +102,13 @@ BENG628 focuses on equipping students with the skills to analyze life sciences d
     * Clinical Data Discovery Cohort: [https://www.kaggle.com/datasets/imtkaggleteam/clinical-dataset](https://www.kaggle.com/datasets/imtkaggleteam/clinical-dataset)
 * **Lecture 2:**
     * Global Health Statistics Dataset: [https://www.kaggle.com/datasets/malaiarasugraj/global-health-statistics](https://www.kaggle.com/datasets/malaiarasugraj/global-health-statistics)
+* **Lecture 5: RNA-seq Analysis for Rare Diseases**
+    * GSE37745 (Kidney diseases): [https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE37745](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE37745)   
 * **Lecture 6:**
-    * GSE37745 (Kidney diseases): [https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE37745](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE37745)
+    * BENG628_Lecture5.R: R script demonstrating RNA-seq analysis using DESeq2 for rare genetic disorders, with a case study on Facioscapulohumeral Muscular Dystrophy (FSHD).
+    * Includes differential expression analysis, volcano plot visualization, and interactive gene search.
+    * data/extracted_files/: Folder for GSE174301 RNA-seq data (to be downloaded manually from https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE174301).
+    * output/Lecture5_VolcanoPlot.png: Generated volcano plot highlighting key FSHD-related genes.
 * **Lecture 7:**
     * GSE11121 (Breast cancer cell lines): [https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE11121](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE11121)
     * GSE183879 (Obesity and diabetes): [https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE183879](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE183879)
