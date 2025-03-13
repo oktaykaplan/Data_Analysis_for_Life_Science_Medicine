@@ -105,6 +105,11 @@ BENG628 focuses on equipping students with the skills to analyze life sciences d
 * **Lecture 5:**
     * data/extracted_files/: Folder for GSE174301 RNA-seq data (to be downloaded manually from https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE174301).
     * output/Lecture5_VolcanoPlot.png: Generated volcano plot highlighting key FSHD-related genes.
+
+      ![PCA_data](https://github.com/user-attachments/assets/9e4e5003-a47c-4660-ad78-908084d785aa)
+
+      ![Rplot](https://github.com/user-attachments/assets/cd8bb85a-87fa-411a-935e-bb996d5e827b)
+
 * **Lecture 6:**
     * GSE37745 (Kidney diseases): [https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE37745](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE37745)  
 * **Lecture 7:**
